@@ -55,10 +55,16 @@ app.get('/mustafiz', (req, res) => {
 ```
 
 
+### Now What is req ? and What is res ?
+
+```js
 
 
-```
+req (Request Object): Contains all the `incoming data` sent by the client (browser, mobile app, Application etc.).
 
+res (Response Object): Contains `methods` used to `send data` back to the client.
+
+Warning Notes: Don't Compare With Newton's Third law of Motions, You will Get confused! 
 
 
 ```
