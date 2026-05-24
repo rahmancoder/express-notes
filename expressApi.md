@@ -118,7 +118,150 @@ Note:  On your local machine, this often prints ::1 or ::ffff:127.0.0.1,
 
 ## Request Headers?
 
+```js
+
+8.  `req.headers`: An object containing all incoming HTTP headers (metadata like content type, 
+                   authorization tokens, or hosting info)
+
+
+9.  `req.get('user-agent')`: A built-in Express helper function to easily retrieve a `specific header`, 
+                         here user-agent identifies the browser, operating system, or device making the `request`.
+
+
 ```
 
+
+## What is Middleware Dependency?
+
+
+```ts
+
+Properties looking for data injected into the `request` by `intermediate helper` software called middleware:
+
+
+10. `req.body`:  Holds data submitted in the `request payload` (like a form submission or JSON API data Using 
+                `POSTMAN or Thunder Client`).  It will read undefined unless you register a body-parser middleware  
+                 like app.use(express.json()) earlier in the file
+
+
+11. `req.cookies`: Holds cookies sent by the browser. It requires the external `cookie-parser` package to populate.
+
+
+12. `req.file / req.files`: Used when uploading files (like images or PDFs). These properties remain undefined unless
+                            an upload handling middleware, like multer, is actively parsing the incoming request form-data.
+
+
+13. `req.send / req.sendStatus`: This ends the request-response lifecycle. It stops the browser spinner from turning and 
+                                 sends the text string "Check console" back to the screen so the user knows the server 
+                                 successfully processed their hit.
+
+```
+
+
+
+## Modern ES Module (ESM)
+
+
+If we use multer or any other middleware to handle Files, we will eventually need to deal with file paths (like: saving a file to a directory).
+
+In old CommonJS, we had access to global variables like `__dirname` and `__filename`. In modern ES Modules ("type": "module"), these variables do not exist.
+
+If we need to construct file paths in `modern Express`, we have to do it using Node's built-in `import.meta.url`, Examples:
+
+
+```js
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+// Recreate __dirname in modern ES Modules
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+// Now we can safely use it with multer or static files:
+// app.use(express.static(path.join(__dirname, 'public')));
+
+```
+
+
+
+### Modern Express V5+ Methods
+
+
+```js
+
+import express from 'express';
+const app = express();
+
+
+// 1. Standard Data Responses
+app.get('/text', (req, res) => res.send('Hello')); // Auto text
+app.get('/html', (req, res) => res.send('<h1>HTML</h1>')); //html
+app.get('/json', (req, res) => res.json({ success: true })); // Best practice for API data
+
+
+
+// 2. Custom Status Codes (Perfect for REST APIs)
+app.post('/items', (req, res) => {
+  
+  res.status(201).json(
+    { id: 1, 
+      message: 'Created successfully' 
+    });
+
+});
+
+
+// 3. Status Only (No Body)
+// Cleanest way to handle an empty 200 OK or 404 Not Found in modern Express
+
+app.delete('/items/:id', (req, res) => 
+{
+  res.sendStatus(204); // Sends "No Content" status and ends the request automatically
+
+});
+
+
+
+// 4. Redirects
+app.get('/old-route', (req, res) => 
+{
+  // Modern standard format: Pass status first, destination second
+  res.redirect(301, '/new-route'); 
+});
+
+
+
+// 5. Cookies & Headers
+app.get('/cookie-demo', (req, res) => {
+  // Setting a cookie with security best practices
+
+  res.cookie('session_token', 'xyz123', {
+
+    maxAge: 900000, // 15 mins
+    httpOnly: true, // Shields against XSS attacks
+    secure: true,   // Modern production requires HTTPS
+    sameSite: 'strict' // Shields against CSRF attacks
+
+  });
+
+
+  // Setting multiple custom headers using Express wrapper syntax
+  res.set(
+  {
+    'Cache-Control': 'no-cache',
+    'X-Custom-Platform': 'Express-v5'
+  });
+
+  res.send('Cookie and headers configured.');
+});
+
+
+// 6. File Downloads
+app.get('/receipt', (req, res) => 
+{
+  // Works perfectly for sending download attachments
+  res.download('./invoice.pdf', 'custom-invoice-name.pdf');
+  
+});
 
 ```
