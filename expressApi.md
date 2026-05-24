@@ -73,19 +73,23 @@ Warning Notes: Don't Compare With Newton's Third law of Motions, You will Get co
 
 ---
 
-## Now What are this req.method, req.url, req.originalUrl, req.path etc ??
+## Now What are this req.method, req.url, req.originalUrl, req.path etc ?? Request MetaData
 
 
 ```js
 Now Lets Explain a little bit, What actually are these `req `.` dot something or somothing`:
 
+
 1.  `req.method`: The HTTP action used (Like: "GET", "POST", "PUT", "DELETE")
 
 
-2.  `req.url`: The path and query string currently being handled (example, /mustafiz?user=true). Don't get confused with `?user=true` is called   optional query parameters, for this you can   try `req.query` to further check
+2.  `req.url`: The path and query string currently being handled (example, /mustafiz?user=true) 
+               Don't get confused with `?user=true` is called optional query parameters,
+               for this you can try `req.query` to further check
 
 
-3.  `req.originalUrl`: Similar to req.url, but contains the original path even if internal rewriting or routing middleware changes later
+3.  `req.originalUrl`: Similar to req.url, but contains the original path even if 
+                       internal rewriting or routing middleware changes later
 
 
 4.  `req.path`:  The routing path part of the `URL`, completely stripping out query strings (Like: /mustafiz)
@@ -97,14 +101,24 @@ Now Lets Explain a little bit, What actually are these `req `.` dot something or
 6.  `req.hostname`: The domain name or server address (Like: "localhost" or "example.com")
 
 
-7.  `req.ip`: The IP address of the client making the `request`.
+7.  `req.ip`: The IP address of the client making the `request`. 
 
 
-Note: On your local machine, this often prints ::1 or ::ffff:127.0.0.1, which are just IPv6 and IPv4 notations for "userItself" known as localhost.
+
+Note:  On your local machine, this often prints ::1 or ::ffff:127.0.0.1, 
+       which are just IPv6 and IPv4 notations for "userItself" known as localhost.
 
 
 `Warning` : Dont put anything you like after `req. (dot)` this OR,  your bank money will transfer to My Account 
 (Mustafizur Rahman something wrong with your Bank Account please check )
+
+
+```
+
+
+## Request Headers?
+
+```
 
 
 ```
