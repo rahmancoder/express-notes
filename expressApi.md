@@ -265,3 +265,79 @@ app.get('/receipt', (req, res) =>
 });
 
 ```
+
+
+
+## Express Middleware?
+
+```ts
+
+import express from 'express';
+const app = express();
+
+// 1. Custom Middleware (Logging)
+// Modern Tip: While custom loggers are great for learning, production apps 
+// usually use highly optimized packages like 'morgan' or 'pino'.
+
+const logger = (req, res, next) => 
+{
+  console.log(`${new Date().toISOString()} - ${req.method} ${req.url}`);
+  next(); 
+};
+
+// Global application-level middleware
+app.use(logger);
+
+
+// 2. Path-specific Middleware
+app.use('/api', logger); 
+
+
+// 3. Multiple Middleware Passing
+// Passing an array of middleware functions is the preferred modern syntax 
+// for readability when combining multiple hooks.
+app.use([express.json(), logger]);
+
+
+// Mock auth middleware for example
+const authMiddleware = (req, res, next) => next();
+
+
+// 4. Route-specific Middleware
+app.get('/protected', authMiddleware, (req, res) => {
+  res.send('Protected content');
+});
+
+
+//  Express v5 Feature: Native Async Error Catching
+// We no longer need an external utility like 'express-async-errors' or custom wrapper functions. 
+// If an async operation rejects, Express v5 automatically passes it to the error-handling middleware below!
+app.get('/async-data', async (req, res) => 
+{
+  const data = await fetchFromDatabase(); // If this throws an error, Express catches it natively
+  res.json(data);
+});
+
+
+// 5. 404 Handler (Must be placed after all defined routes, but BEFORE the error handler)
+app.use((req, res) => 
+{
+  res.status(404).json({ error: 'Not found' });
+});
+
+
+// 6. Error-handling Middleware (Must have exactly 4 parameters and be placed dead last)
+app.use((err, req, res, next) => 
+{
+  console.error(err.stack);
+  
+  // Best practice: structure your error payloads uniformly
+  res.status(err.status || 500).json(
+  { 
+    error: err.message || 'Something broke internally!' 
+  }
+  );
+});
+
+
+```
