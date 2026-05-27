@@ -341,3 +341,68 @@ app.use((err, req, res, next) =>
 
 
 ```
+
+## Modules Router Handling Modules -> user-> user.route.ts
+
+```ts
+// routes/users.ts
+import express from 'express';
+const userRoutes = express.Router();
+
+// const router=Router();
+
+
+// Middleware specific to this router
+userRoutes.use((req, res, next) => {
+  // Modern standard: Using toISOString() makes logs much more readable than Date.now()
+  console.log(`[Users Router] Access Time: ${new Date().toISOString()}`);
+  next();
+});
+
+
+// Routes
+userRoutes.get('/', (req, res) => {
+  res.send('Get all users');
+});
+
+
+userRoutes.get('/:id', (req, res) => {
+  // Using destructuring for modern syntax consistency
+  const { id } = req.params; 
+  res.send(`Get user ${id}`);
+});
+
+
+userRoutes.post('/', (req, res) => {
+  res.status(201).send('Create user');
+});
+
+// Modules Export
+export default userRoutes;
+
+```
+
+
+## Exporting to Main file Here it is / app.ts OR / server.ts
+
+
+```ts
+
+// app.ts OR server.ts
+import express from 'express';
+// Import your modular router
+import { userRoutes } from "./modules/user/user.route.ts";
+
+
+const app = express();
+
+app.use(express.json());
+
+// Mount the router cleanly
+app.use('/users', userRoutes);
+
+app.listen(3000, () => {
+  console.log(' Server running on http://localhost:3000');
+});
+
+```
