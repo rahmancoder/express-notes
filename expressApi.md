@@ -424,7 +424,60 @@ userRouter.post('/', [authMiddleware, validationMiddleware], (req, res) => {
 
 ##  Error Handling Setup in Organize way
 
-```
+```ts
+
+import express from 'express';
+const app = express();
+
+// 1. Custom Error Class (Still standard and highly recommended)
+class AppError extends Error 
+{
+  constructor(message, statusCode) 
+  {
+    super(message);
+    this.statusCode = statusCode;
+    // Captures the call stack cleaner in modern Node environments
+    Error.captureStackTrace(this, this.constructor); 
+  }
+}
+
+
+// 2. Modern Async Route (NO MORE WRAPPER!)
+// Express v5 automatically wraps this in a promise chain behind the scenes.
+app.get('/async', async (req, res) => 
+{
+  // If someAsyncFunction rejects, it automatically triggers the global error handler
+  const data = await someAsyncFunction(); 
+
+  res.json(data);
+});
+
+
+// 3. Throwing Errors Manually
+app.get('/error', (req, res, next) => 
+{
+  // Synchronous errors can still use next() or simply throw a new AppError
+  throw new AppError('Resource not found', 404);
+});
+
+
+// 4. Global Error Handler (Must be registered LAST)
+// The signature requires all 4 parameters (err, req, res, next) to be recognized as an error handler.
+app.use((err, req, res, next) => 
+{
+  const statusCode = err.statusCode || 500;
+  
+  res.status(statusCode).json(
+  {
+    status: `${statusCode}`.startsWith('4') ? 'fail' : 'error',
+    message: err.message || 'Internal Server Error',
+    // Pro-Tip: Only show stack traces during local development
+    ...(process.env.NODE_ENV === 'development' && { stack: err.stack })
+  }
+  
+  );
+
+});
 
 
 ```
