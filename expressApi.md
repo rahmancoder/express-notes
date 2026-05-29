@@ -406,3 +406,25 @@ app.listen(3000, () => {
 });
 
 ```
+
+## Protecting Middleware (POST method)
+
+
+```ts
+
+// Example: Only protecting the POST route, leaving GET routes public
+userRouter.post('/', [authMiddleware, validationMiddleware], (req, res) => {
+  res.status(201).send('Create user');
+});
+
+
+
+```
+
+
+##  Error Handling Setup in Organize way
+
+```
+
+
+```
