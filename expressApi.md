@@ -474,10 +474,54 @@ app.use((err, req, res, next) =>
     // Pro-Tip: Only show stack traces during local development
     ...(process.env.NODE_ENV === 'development' && { stack: err.stack })
   }
-  
+
   );
 
 });
+
+
+```
+
+
+
+## Static File Handling
+
+
+```ts
+
+import express from 'express';
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+const app = express();
+
+//  Recreate __dirname for modern ES Modules
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+
+// 1. Serve static files from 'public' folder safely using absolute paths
+app.use(express.static(path.join(__dirname, 'public')));
+
+
+// 2. Serve from multiple folders
+app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.static(path.join(__dirname, 'uploads')));
+
+
+// 3. Serve with a virtual path prefix (Access via: http://localhost:3000/static/images/logo.png)
+app.use('/static', express.static(path.join(__dirname, 'public')));
+
+
+// 4. Custom options with Modern Cache Control
+app.use(express.static(path.join(__dirname, 'public'), 
+{
+  // Modern standard: while '1d' works, passing time in milliseconds 
+  // or using standard 'Cache-Control' headers explicitly is preferred in production.
+  maxAge: 24 * 60 * 60 * 1000, // 1 day in milliseconds
+  etag: true,                  
+  lastModified: true           
+}));
 
 
 ```
