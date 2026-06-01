@@ -1144,3 +1144,64 @@ export type ROLES = "maintainer" | "contributor";
 
 
 ```
+
+
+### 9. Adding sendResponse utility and globalErrorHandler
+
+
+a) `utility/sendResponse.ts` file:
+
+```ts
+import type { Response } from "express";
+
+
+type TResponse<T> = {
+    statusCode: number;
+    success: boolean;
+    message: string;
+    data?: T;
+    error?: any;
+}
+
+
+const sendResponse = <T>(res: Response, data: TResponse<T>) => {
+
+    res.status(data.statusCode).json({
+        success: data.success,
+        message: data.message,
+        data: data.data,
+        error: data.error,
+    });
+}
+
+export default sendResponse;
+
+
+```
+
+
+b) `middleware/globalErrorHandler.ts` file:
+
+
+```ts
+import type { NextFunction, Request, Response } from "express";
+
+
+const globalErrorHandler = (
+    err: Error,
+    req: Request,
+    res: Response,
+    next: NextFunction) => {
+    // console.error(err.stack);
+    res.status(500).json(
+        {
+            success: false,
+            message: err.message || "Internal Server Error",
+        });
+};
+
+export default globalErrorHandler;
+
+```
+
+### 10. Build and Deploy to Vercel Now 
